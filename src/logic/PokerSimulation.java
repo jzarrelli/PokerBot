@@ -2,6 +2,7 @@ package logic;
 
 import java.util.ArrayList;
 
+import datastructures.Deck;
 import datastructures.Player;
 import datastructures.Stake;
 import datastructures.Table;
@@ -9,11 +10,13 @@ import datastructures.Table;
 public class PokerSimulation {	
 	
 	Table table;
+	Deck deck;
 	ArrayList<Player> players;
 	Stake currentStakes;
 
 	protected PokerSimulation(int numberOfPlayers) {
 		table = new Table(numberOfPlayers);
+		deck = new Deck();
 		players = new ArrayList<>();
 		players.addAll(table.seatedPlayers);
 	}
@@ -79,12 +82,15 @@ public class PokerSimulation {
 	}
 
 	private void dealACommunityCard() {
-		// TODO Auto-generated method stub
+		table.placeCardOnBoard(deck.dealCard());
 		
 	}
 
+	/**
+	 * Deal a card into thin air
+	 */
 	private void burnACard() {
-		// TODO Auto-generated method stub
+		deck.dealCard();
 		
 	}
 
@@ -128,13 +134,14 @@ public class PokerSimulation {
 	private void dealHoleCard() {
 		for (Player player : players){
 			if (!player.isSittingOut()){
-				dealCardToPlayer();
+				dealCardToPlayer(player);
 			}
 		}
 	}
 
-	private void dealCardToPlayer() {
-		// TODO Auto-generated method stub
+	private void dealCardToPlayer(Player player) {
+		player.addCardToHand(deck.dealCard());
+		
 		
 	}
 }

@@ -17,6 +17,7 @@ public class CashTable extends PokerSimulation{
 	public void simulateHands(int handsToSimulate) {
 		while (handsToSimulate > 0 && shouldKeepPlaying()){
 			handsToSimulate--;
+			deck.shuffleFullDeck();
 			playHand();
 		}
 	}
