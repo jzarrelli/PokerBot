@@ -51,7 +51,7 @@ public class Player {
 		return chips;
 	}
 
-	public void setChips(int chips) {
+	public void setChips(double chips) {
 		this.chips = chips;
 	}
 
