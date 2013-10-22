@@ -1,14 +1,17 @@
 package datastructures;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
 
+import com.google.common.collect.BiMap;
+
+
 public class Table {
-	HashMap<Seat,Player> seatMap;
+	BiMap<Seat,Player> seatMap;
 	public LinkedList<Player> seatedPlayers;
 	int maxSeats;
 	ArrayList<Card> board;
+	private Seat dealerSeat;
 	
 	
 	public Table(int maxSeats){
@@ -28,6 +31,11 @@ public class Table {
 	public void addPlayerToTable(Player playerToAdd, int seatNumber) {
 		seatedPlayers.add(playerToAdd);
 		seatMap.put(Seat.getSeatNumber(seatNumber), playerToAdd);
+	}
+	
+	public Seat makePlayerDealer(Player dealer){
+		dealerSeat = seatMap.inverse().get(dealer);
+		return dealerSeat;
 	}
 	
 	

@@ -1,6 +1,7 @@
 package logic;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 import datastructures.Deck;
 import datastructures.Player;
@@ -19,6 +20,7 @@ public class PokerSimulation {
 		deck = new Deck();
 		players = new ArrayList<>();
 		players.addAll(table.seatedPlayers);
+		highCardForDeal();
 	}
 	
 	protected void playHand(){
@@ -59,6 +61,13 @@ public class PokerSimulation {
 	private void updatePlayerStates() {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	private void highCardForDeal(){
+		// We could deal cards and pick the highest one...
+		// but for now we are lazy and will just randomly pick a player
+		Random rand = new Random();
+		rand.nextInt(players.size());
 	}
 
 	private void moveDealerSeat() {
