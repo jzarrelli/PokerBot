@@ -38,5 +38,19 @@ public class Table {
 		return dealerSeat;
 	}
 	
+	public Player getCurrentDealer(){
+		return seatMap.get(dealerSeat);
+	}
+	
+	
+	public Player advanceDealerSeat(){
+		// TODO: Handle a dead seat dealer.
+		Player newDealer = null;
+		while (newDealer == null) {
+			dealerSeat = dealerSeat.getNextSeat();
+			newDealer = seatMap.get(dealerSeat);
+		}
+		return newDealer;
+	}
 	
 }

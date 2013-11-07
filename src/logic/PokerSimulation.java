@@ -71,8 +71,7 @@ public class PokerSimulation {
 	}
 
 	private void moveDealerSeat() {
-		// TODO Auto-generated method stub
-		
+		table.advanceDealerSeat();
 	}
 
 	private void determineWinnersAndAssignChips() {
