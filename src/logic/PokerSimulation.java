@@ -79,8 +79,20 @@ public class PokerSimulation {
 		
 	}
 
-	private boolean handShouldTerminate() {
-		// TODO Auto-generated method stub
+	private boolean handShouldTerminate() {	
+		// Always called after round of betting
+		int foldedCount = 0;
+		for (Player player : table.seatedPlayers) {
+			foldedCount += player.hasPlayerFolded() ? 1 : 0;
+		}
+		// All but one players have folded or
+		// We already dealt the river aka 5 cards on the board
+		
+		if (foldedCount >= (table.seatedPlayers.size() - 1) ||
+			table.getCardsOnBoard().size() == 5) {
+			return true;
+		}
+		
 		return false;
 	}
 
@@ -115,14 +127,25 @@ public class PokerSimulation {
 	}
 
 	private void performRoundOfBetting() {
-		// TODO Auto-generated method stub
+		double maxBet = 0.0;
+		for (Player player : players){
+			if (!player.isSittingOut()){
+				maxBet = player.playRound(maxBet);
+			}
+		}
 	}
 
 	private void postAnteAndBlinds() {
 		if (currentStakes.getAnte() > 0.0) {
 			ante();
 		}
-		// TODO: Keep track of dealer seat and post blinds accordingly.
+		//Put small blind in pot
+		Player smallBlind = table.getSmallBlindPLayer();
+		smallBlind.putChipsInPot(currentStakes.getSmallBlind());
+		
+		//Put big blind in pot
+		Player bigBlind = table.getBigBlindPLayer();
+		bigBlind.putChipsInPot(currentStakes.getBigBlind());
 	}
 
 	private void ante() {

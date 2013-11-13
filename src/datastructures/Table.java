@@ -27,7 +27,9 @@ public class Table {
 		board.add(card);
 	}
 	
-
+	public ArrayList<Card> getCardsOnBoard() {
+		return board;
+	}
 	public void addPlayerToTable(Player playerToAdd, int seatNumber) {
 		seatedPlayers.add(playerToAdd);
 		seatMap.put(Seat.getSeatNumber(seatNumber), playerToAdd);
@@ -41,7 +43,21 @@ public class Table {
 	public Player getCurrentDealer(){
 		return seatMap.get(dealerSeat);
 	}
-	
+
+	/**
+	 * Gets player immediately to the left of the dealer.
+	 * @return Player in small blind position
+	 */
+	public Player getSmallBlindPLayer() {
+		return seatMap.get(dealerSeat.getNextSeat());
+	}
+	/**
+	 * Gets player two seats away from dealer (big blind position)
+	 * @return Player in big blind position
+	 */
+	public Player getBigBlindPLayer() {
+		return seatMap.get(dealerSeat.getArbitrarySeatToLeft(2));
+	}
 	
 	public Player advanceDealerSeat(){
 		// TODO: Handle a dead seat dealer.

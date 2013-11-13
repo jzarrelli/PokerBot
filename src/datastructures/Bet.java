@@ -1,5 +1,7 @@
 package datastructures;
 
+import java.util.Random;
+
 
 public class Bet {
     public BetState bet;
@@ -22,6 +24,10 @@ public class Bet {
     public Bet(BetState bet, double amount) {
         this.bet = bet;
         this.amount = amount;
+    }
+    
+    public String toString() {
+    	return bet.toString() + "Chips: " + String.valueOf(amount);
     }
     
 }
