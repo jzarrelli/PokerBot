@@ -26,7 +26,7 @@ public class Player {
 	Player(double chips, PlayerState playerState) {
 		this.chips = chips;
 		this.playerState = playerState;
-		this.cards = new ArrayList<>();
+		this.cards = new ArrayList<>(2);
 	}
 
 	/**
@@ -36,8 +36,14 @@ public class Player {
 	 *            # of chips the player has
 	 */
 	Player(double chips) {
-		this.chips = chips;
-		this.playerState = PlayerState.InHand;
+		this(chips, PlayerState.InHand);
+	}
+	
+	/**
+	 * Creates a player with a stack of 1500 chips. This method is only meant for testing.
+	 */
+	public Player() {
+		this(1500.0);
 	}
 
 	public PlayerState getPlayerState() {
@@ -62,6 +68,14 @@ public class Player {
 
 	public void addCardToHand(Card card) {
 		cards.add(card);
+	}
+	
+	public void resetHand() {
+		cards.clear();
+	}
+	
+	public ArrayList<Card> getHand() {
+		return cards;
 	}
 
 	/**

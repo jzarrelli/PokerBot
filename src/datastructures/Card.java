@@ -1,6 +1,6 @@
 package datastructures;
 
-import java.util.*;
+import java.util.Stack;
 
 
 public class Card
@@ -11,15 +11,29 @@ public class Card
 	public Rank rank () { return rank; }
 	public Suit suit() { return suit; }
 
-	private Card(Rank rank, Suit suit)
+	/**
+	 * Creates a card of the given Rank and Suit. 
+	 * @param rank The rank the card will have.
+	 * @param suit The suit the card will have.
+	 */
+	public Card(Rank rank, Suit suit)
 	{
 		this.rank = rank;
 		this.suit = suit;
 	}
 	
 	/**
+	 * This method converts the card to an int for use in the fast 
+	 * hand-ranking algorithm. 
+	 * @return an int representing the current card.
+	 */
+	public int getCardIndex() {
+		return ((rank.getValue() - 2) << 2) + suit.ordinal() + 1;
+	}
+	
+	/**
 	 * Generates order Stack of Cards
-	 * @return Stack<Card> 52 cards
+	 * @return {@code Stack<Card>} 52 cards
 	 */
 	public static Stack<Card> getOrderedDeckofCards() {
 		Stack<Card> orderedDeck = new Stack<>();
