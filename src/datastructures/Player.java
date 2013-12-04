@@ -1,7 +1,6 @@
 package datastructures;
 
 import java.util.ArrayList;
-import java.util.Random;
 
 import logic.Strategy;
 
@@ -36,7 +35,7 @@ public class Player {
 	 *            # of chips the player has
 	 */
 	Player(double chips) {
-		this(chips, PlayerState.InHand);
+		this(chips, PlayerState.Check);
 	}
 	
 	/**
@@ -50,12 +49,22 @@ public class Player {
 		return playerState;
 	}
 
-	public boolean hasPlayerFolded() {
+	public boolean isFolded() {
 		return playerState.equals(PlayerState.Folded);
 	}
-
+	public boolean isSittingOut() {
+		return playerState.equals(PlayerState.SittingOut);
+	}
 	public void setPlayerState(PlayerState playerState) {
 		this.playerState = playerState;
+	}
+	
+	public boolean isAllIn() {
+		if(chips == 0.0) {
+			setPlayerState(PlayerState.AllIn);
+			return true;
+		}
+		return false;
 	}
 
 	public double getChips() {
@@ -87,14 +96,15 @@ public class Player {
 	 * @return The amount of chips actually put in the pot.
 	 */
 	public double putChipsInPot(double amount) {
-		if (this.playerState == PlayerState.InHand) {
+		if (!isFolded() || !isSittingOut()) {
 			if (amount < this.chips) {
 				this.chips -= amount;
 			} else {
 				amount = this.chips;
 				this.chips = 0.0;
-				this.playerState = PlayerState.AllIn;
+				isAllIn();
 			}
+			System.out.println(toString()); //TODO: just for testing
 			return amount;
 		} else {
 			return 0.0;
@@ -102,38 +112,42 @@ public class Player {
 
 	}
 
-	public boolean isSittingOut() {
-		return getPlayerState().equals(PlayerState.SittingOut);
-	}
-
-	public double playRound(double amountToCall) {
-		// TODO a lot
-		// determine bet
-		// set state based on bet
-		// put chips in pot if any
-		// if raise, track amount to call
-		double betAmount = 0;
-		Random rand = new Random();
-		if (playerState.equals(PlayerState.InHand)) {
-			if(amountToCall > 0 && chips >= amountToCall) {
-				betAmount = amountToCall;
-			} else if (chips < amountToCall) {
-				playerState = PlayerState.Folded;
+	public double playRound(double currentBet, double minRaise, double maxRaise) {
+		// TODO actual strategy
+		// Rudimentary strat, always min raises / call if possible
+		// Stays in as long as possible
+		double betAmount = 0.0;
+		if (!isFolded() || !isSittingOut()) {
+			if(currentBet > 0.0 && chips >= (currentBet + minRaise)) {
+				betAmount = currentBet + minRaise; //Min Raise
+				setPlayerState(PlayerState.Raise);
+			} 
+			else if(currentBet > 0.0 && chips >= currentBet) {
+				betAmount = currentBet; //Call bot
+				setPlayerState(PlayerState.Call);
+			} 
+			else if (chips < currentBet) {
+				setPlayerState(PlayerState.Folded);
+			}
+			else if (currentBet == 0.0) {
+				betAmount = minRaise; //Min bet
+				setPlayerState(PlayerState.Bet);
 			}
 			else {
-				betAmount = this.chips * rand.nextDouble();
+				setPlayerState(PlayerState.Check);
 			}
 		} 
-		putChipsInPot(betAmount);
-		return betAmount;
+		return putChipsInPot(betAmount);
 	}
 
 	public String toString() {
+		//TODO: print seat # and hand value
 		StringBuilder sb = new StringBuilder();
+		sb.append(playerState.toString());
 		sb.append("Player has " + String.valueOf(this.chips) + " Chips, ");
 		sb.append("and a hand of: ");
 		for (Card card : cards) {
-			sb.append(card.toString());
+			sb.append(card.toString() + " ");
 		}
 		return sb.toString();
 	}
@@ -147,8 +161,13 @@ public class Player {
 	 */
 	enum PlayerState {
 
-		Folded("Player has folded"), InHand("Player is in hand"), AllIn(
-				"Player is all in."), SittingOut("Player is sitting out");
+		Folded("Player has folded. "),
+		AllIn("Player is all in. "),
+		Raise("Player has raised. "),
+		Bet("Player has bet. "),
+		Call("Player has called. "),
+		Check("Player has checked. "),
+		SittingOut("Player is sitting out. ");
 
 		private String description;
 

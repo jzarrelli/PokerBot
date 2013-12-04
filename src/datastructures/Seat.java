@@ -16,6 +16,7 @@ public enum Seat {
 		return getArbitrarySeatToLeft(1);
 	}
 	public Seat getArbitrarySeatToLeft(int seatsAway) {
-		return seats[(this.ordinal()+seatsAway) % seats.length];
+		int seatNumber = (this.ordinal()+seatsAway) % seats.length;
+		return getSeatNumber(seatNumber);
 	}
 }

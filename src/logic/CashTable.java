@@ -1,5 +1,6 @@
 package logic;
 
+import datastructures.BetLimit;
 import datastructures.Rake;
 import datastructures.Stake;
 
@@ -7,8 +8,8 @@ public class CashTable extends PokerSimulation{
 	
 	Rake rake;
 	
-	public CashTable(Stake stakes) {
-		super(9);
+	public CashTable(Stake stakes, BetLimit limit) {
+		super(9, limit);
 		this.currentStakes = stakes;
 	}
 

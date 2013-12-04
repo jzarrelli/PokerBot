@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 
 import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 
 
 public class Table {
@@ -11,12 +12,16 @@ public class Table {
 	public LinkedList<Player> seatedPlayers;
 	int maxSeats;
 	ArrayList<Card> board;
+	private double pot;
 	private Seat dealerSeat;
 	
 	
 	public Table(int maxSeats){
 		this.maxSeats = maxSeats;
+		this.seatMap = HashBiMap.create();
 		this.seatedPlayers = new LinkedList<>();
+		this.pot = 0.0;
+		this.dealerSeat = Seat.SEAT_1; //TODO: do we want to start with first seat? / make configurable
 		this.board = new ArrayList<>();
 		for (int i = 0; i < maxSeats; i++){
 			addPlayerToTable(new Player(1500.0), i);
@@ -25,6 +30,13 @@ public class Table {
 	
 	public void placeCardOnBoard(Card card) {
 		board.add(card);
+	}
+	
+	public void addChipsToPot(double amount) {
+		pot += amount;
+	}
+	public double getChipsInPot() {
+		return pot;
 	}
 	
 	public ArrayList<Card> getCardsOnBoard() {
