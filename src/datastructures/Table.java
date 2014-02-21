@@ -8,7 +8,7 @@ import com.google.common.collect.HashBiMap;
 
 
 public class Table {
-	BiMap<Seat,Player> seatMap;
+	public BiMap<Seat,Player> seatMap;
 	public LinkedList<Player> seatedPlayers;
 	int maxSeats;
 	ArrayList<Card> board;

@@ -74,6 +74,10 @@ public class Player {
 	public void setChips(double chips) {
 		this.chips = chips;
 	}
+	
+	public void giveChips(double chips) {
+		this.chips += chips;
+	}
 
 	public void addCardToHand(Card card) {
 		cards.add(card);
@@ -81,6 +85,10 @@ public class Player {
 	
 	public void resetHand() {
 		cards.clear();
+	}
+	public void resetPlayerState() {
+		//TODO: sit out if in bad position
+		setPlayerState(PlayerState.Check);
 	}
 	
 	public ArrayList<Card> getHand() {

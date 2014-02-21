@@ -1,11 +1,13 @@
 package logic;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Random;
 
 import datastructures.BetLimit;
 import datastructures.Deck;
 import datastructures.Player;
+import datastructures.Seat;
 import datastructures.Stake;
 import datastructures.Table;
 
@@ -16,12 +18,14 @@ public class PokerSimulation {
 	BetLimit betLimit;
 	ArrayList<Player> players;
 	Stake currentStakes;
+	HandEvaluator handEvaluator;
 
 	protected PokerSimulation(int numberOfPlayers, BetLimit limit) {
 		table = new Table(numberOfPlayers);
 		deck = new Deck();
 		betLimit = limit;
 		players = new ArrayList<>();
+		handEvaluator = new HandEvaluator();
 		players.addAll(table.seatedPlayers);
 		highCardForDeal();
 	}
@@ -29,6 +33,7 @@ public class PokerSimulation {
 	protected void playHand() {
 		postAnteAndBlinds();
 		dealHoleCards();
+		handEvaluator = new HandEvaluator();
 		performRoundOfBetting();
 		if (handShouldTerminate()) {
 			doHandEndRoutine();
@@ -85,7 +90,10 @@ public class PokerSimulation {
 	}
 
 	private void updatePlayerStates() {
-		// TODO Auto-generated method stub
+		for ( Player player : table.seatedPlayers) {
+			player.resetHand();
+			player.resetPlayerState();
+		}
 
 	}
 
@@ -99,27 +107,79 @@ public class PokerSimulation {
 	private void moveDealerSeat() {
 		table.advanceDealerSeat();
 	}
-
+	
+	private void assignChips(ArrayList<Player> winners) {
+		// TODO: side pots
+		// TODO: minus rake
+		double chipsPerWinner = table.getChipsInPot() / (double) winners.size();
+		for ( Player player : winners) {
+			player.giveChips(chipsPerWinner);
+			printWinnerAndHand(player); // TODO: testing only
+		}
+	}
+	
+	private void printWinnerAndHand(Player player) {
+		String seatNumber = table.seatMap.inverse().get(player).name();
+		int playerHandStrength = handEvaluator.evaluatePlayerHandAtTable(player, table);
+		System.out.println("Player at: " + seatNumber + " wins. " +  "Hand Value: " + String.valueOf(playerHandStrength));
+		player.toString();
+	}
+	private ArrayList<Player> determineWinner() {
+		HashMap<Integer, ArrayList<Player>> valuesToPlayers = new HashMap<>();
+		for (Player player : table.seatedPlayers) {
+			int playerHandStrength = handEvaluator.evaluatePlayerHandAtTable(player, table);
+			if (!valuesToPlayers.containsKey(playerHandStrength)) {
+				ArrayList<Player> players = new ArrayList<>();
+				players.add(player);
+				valuesToPlayers.put(playerHandStrength, players);
+			}
+			else {
+				ArrayList<Player> players = valuesToPlayers.get(playerHandStrength);
+				players.add(player);
+				valuesToPlayers.put(playerHandStrength, players);
+			}
+			
+		}
+		int maxStrength = 0;
+		for (int handStrength : valuesToPlayers.keySet()) {
+			if (handStrength > maxStrength) {
+				maxStrength = handStrength;
+			}
+		}
+		return valuesToPlayers.get(maxStrength);
+	}
+	
 	private void determineWinnersAndAssignChips() {
-		// TODO Auto-generated method stub
+		
+		if (playersInHand().size() == 1) {
+			// Assign chips to player still in hand
+			assignChips(playersInHand());
+		}
+		//Otherwise determine winner/tie based on hand strength
+		ArrayList<Player> winners = determineWinner();
+		assignChips(winners);
 
 	}
 
 	private boolean handShouldTerminate() {
 		// Always called after round of betting
-		int foldedCount = 0;
-		for (Player player : table.seatedPlayers) {
-			foldedCount += player.isFolded() ? 1 : 0;
-		}
 		// All but one players have folded or
 		// We already dealt the river aka 5 cards on the board
+		return playersInHand().size() == 1 || allCardsOnBoard();
+	}
 
-		if (foldedCount >= (table.seatedPlayers.size() - 1)
-				|| table.getCardsOnBoard().size() == 5) {
-			return true;
+	private ArrayList<Player> playersInHand() {
+		ArrayList<Player> playersInHand = new ArrayList<>();
+		for (Player player : table.seatedPlayers) {
+			if( !player.isFolded() ) {
+				playersInHand.add(player);
+			}
 		}
+		return playersInHand;
+	}
 
-		return false;
+	private boolean allCardsOnBoard() {
+		return table.getCardsOnBoard().size() == 5;
 	}
 
 	private void dealRiver() {
